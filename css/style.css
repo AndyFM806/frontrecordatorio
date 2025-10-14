@@ -1,0 +1,159 @@
+/* ======== BASE GENERAL ======== */
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+  background: linear-gradient(135deg, #f7dfe9, #fefbff);
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+/* ======== ENCABEZADO ======== */
+header {
+  background: #f0a8c0; /* rosa pastel suave */
+  color: white;
+  text-align: center;
+  padding: 15px 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+header h1 {
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ======== NAVEGACIÓN ======== */
+nav {
+  margin-top: 10px;
+}
+
+nav button {
+  background: #f6c7d6;
+  border: none;
+  color: #333;
+  padding: 10px 15px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+nav button:hover {
+  background: #f3aec4;
+}
+
+/* ======== SECCIONES ======== */
+main {
+  padding: 30px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.seccion {
+  display: none;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  padding: 25px 30px;
+  margin-bottom: 30px;
+  transition: transform 0.3s ease;
+}
+
+.seccion.activa {
+  display: block;
+  animation: aparecer 0.3s ease-in;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ======== ELEMENTOS DE FORMULARIO ======== */
+input, textarea {
+  width: 95%;
+  margin: 8px 0;
+  padding: 12px 14px;
+  border: 1px solid #f1b8c8;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+input:focus, textarea:focus {
+  border-color: #f08db0;
+  box-shadow: 0 0 5px rgba(240,141,176,0.3);
+}
+
+button {
+  background: #f08db0;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #e8799f;
+}
+
+/* ======== TARJETAS ======== */
+#listaPrestamos, #listaCuotas {
+  margin-top: 20px;
+}
+
+.tarjeta {
+  background: #fff9fb;
+  border-left: 6px solid #f08db0;
+  border-radius: 10px;
+  padding: 12px 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.tarjeta strong {
+  color: #e65a8d;
+}
+
+/* ======== PIE DE PÁGINA ======== */
+footer {
+  text-align: center;
+  background: #f6c7d6;
+  color: #333;
+  padding: 15px 0;
+  font-size: 13px;
+  border-top: 1px solid #f1b8c8;
+}
+
+/* ======== MENSAJES Y DETALLES ======== */
+#loginMsg, #emailMsg {
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+#loginMsg {
+  color: #e65a8d;
+}
+
+#emailMsg {
+  color: #6d6d6d;
+}
+
+/* ======== BOTONES SECUNDARIOS ======== */
+.tarjeta button {
+  background: #f3aec4;
+  color: #333;
+  margin-top: 5px;
+  font-size: 13px;
+  padding: 8px 15px;
+}
+
+.tarjeta button:hover {
+  background: #f08db0;
+  color: #fff;
+}

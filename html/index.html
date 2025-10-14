@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Recordatorio Bancario</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <header>
+    <h1>🏦 Recordatorio Bancario</h1>
+    <nav id="menu">
+      <button onclick="mostrarSeccion('login')">Iniciar Sesión</button>
+      <button onclick="mostrarSeccion('prestamos')">Préstamos</button>
+      <button onclick="mostrarSeccion('cuotas')">Cuotas</button>
+      <button onclick="mostrarSeccion('email')">Correo Test</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Login -->
+    <section id="login" class="seccion activa">
+      <h2>🔐 Iniciar Sesión</h2>
+      <input type="email" id="loginEmail" placeholder="Correo">
+      <input type="password" id="loginPassword" placeholder="Contraseña">
+      <button onclick="login()">Entrar</button>
+      <p id="loginMsg"></p>
+    </section>
+
+    <!-- Préstamos -->
+    <section id="prestamos" class="seccion">
+      <h2>💰 Crear Préstamo</h2>
+      <input type="number" id="monto" placeholder="Monto">
+      <input type="number" id="interes" placeholder="Interés (%)">
+      <input type="number" id="cuotas" placeholder="Número de cuotas">
+      <button onclick="crearPrestamo()">Registrar</button>
+      <h3>📋 Mis préstamos</h3>
+      <div id="listaPrestamos"></div>
+    </section>
+
+    <!-- Cuotas -->
+    <section id="cuotas" class="seccion">
+      <h2>📆 Cuotas pendientes</h2>
+      <div id="listaCuotas"></div>
+    </section>
+
+    <!-- Email -->
+    <section id="email" class="seccion">
+      <h2>✉️ Enviar correo de prueba</h2>
+      <input type="email" id="emailPara" placeholder="Destino">
+      <input type="text" id="emailAsunto" placeholder="Asunto">
+      <textarea id="emailMensaje" placeholder="Mensaje"></textarea>
+      <button onclick="enviarEmail()">Enviar</button>
+      <p id="emailMsg"></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Recordatorio Bancario</p>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
