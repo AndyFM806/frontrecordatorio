@@ -2,15 +2,16 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Recordatorio Bancario</title>
+  <title>🏦 Recordatorio Bancario</title>
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-
+ 
   <header>
     <h1>🏦 Recordatorio Bancario</h1>
     <nav id="menu">
       <button onclick="mostrarSeccion('login')">Iniciar Sesión</button>
+      <button onclick="mostrarSeccion('register')">Registro</button>
       <button onclick="mostrarSeccion('prestamos')">Préstamos</button>
       <button onclick="mostrarSeccion('cuotas')">Cuotas</button>
       <button onclick="mostrarSeccion('email')">Correo Test</button>
@@ -18,35 +19,45 @@
   </header>
 
   <main>
-    <!-- Login -->
+    <!-- 🔐 LOGIN -->
     <section id="login" class="seccion activa">
-      <h2>🔐 Iniciar Sesión</h2>
+      <h2>Iniciar Sesión</h2>
       <input type="email" id="loginEmail" placeholder="Correo">
       <input type="password" id="loginPassword" placeholder="Contraseña">
       <button onclick="login()">Entrar</button>
       <p id="loginMsg"></p>
     </section>
 
-    <!-- Préstamos -->
+    <!-- 📝 REGISTRO -->
+    <section id="register" class="seccion">
+      <h2>Registrar Usuario</h2>
+      <input type="text" id="regNombre" placeholder="Nombre completo">
+      <input type="email" id="regEmail" placeholder="Correo">
+      <input type="password" id="regPassword" placeholder="Contraseña">
+      <button onclick="registrar()">Registrar</button>
+      <p id="regMsg"></p>
+    </section>
+
+    <!-- 💰 PRÉSTAMOS -->
     <section id="prestamos" class="seccion">
-      <h2>💰 Crear Préstamo</h2>
-      <input type="number" id="monto" placeholder="Monto">
+      <h2>Registrar nuevo préstamo</h2>
+      <input type="number" id="monto" placeholder="Monto del préstamo">
       <input type="number" id="interes" placeholder="Interés (%)">
       <input type="number" id="cuotas" placeholder="Número de cuotas">
-      <button onclick="crearPrestamo()">Registrar</button>
-      <h3>📋 Mis préstamos</h3>
+      <button onclick="crearPrestamo()">Guardar</button>
+      <h3>Mis préstamos</h3>
       <div id="listaPrestamos"></div>
     </section>
 
-    <!-- Cuotas -->
+    <!-- 📆 CUOTAS -->
     <section id="cuotas" class="seccion">
-      <h2>📆 Cuotas pendientes</h2>
+      <h2>Cuotas pendientes</h2>
       <div id="listaCuotas"></div>
     </section>
 
-    <!-- Email -->
+    <!-- ✉️ EMAIL TEST -->
     <section id="email" class="seccion">
-      <h2>✉️ Enviar correo de prueba</h2>
+      <h2>Enviar correo de prueba</h2>
       <input type="email" id="emailPara" placeholder="Destino">
       <input type="text" id="emailAsunto" placeholder="Asunto">
       <textarea id="emailMensaje" placeholder="Mensaje"></textarea>
@@ -59,6 +70,6 @@
     <p>© 2025 Recordatorio Bancario</p>
   </footer>
 
-  <script src="/js/app.js"></script>
+  <script src="../js/app.js"></script>
 </body>
 </html>

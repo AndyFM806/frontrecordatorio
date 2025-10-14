@@ -1,40 +1,60 @@
 const API_BASE = "http://localhost:5500/api";
 let usuarioActual = null;
 
-// ======= Navegación =======
+/* ========== NAVEGACIÓN ========== */
 function mostrarSeccion(id) {
   document.querySelectorAll(".seccion").forEach(sec => sec.classList.remove("activa"));
   document.getElementById(id).classList.add("activa");
 }
 
-// ======= LOGIN =======
+/* ========== LOGIN ========== */
 async function login() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
   const msg = document.getElementById("loginMsg");
 
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ email, password })
-  });
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
 
-  const data = await res.json();
-  if (data.usuario) {
-    usuarioActual = data.usuario;
+    if (!res.ok) throw new Error("Credenciales inválidas");
+
+    usuarioActual = await res.json();
     msg.textContent = "✅ Bienvenido, " + usuarioActual.nombre;
     mostrarSeccion('prestamos');
     cargarPrestamos();
-  } else {
-    msg.textContent = "❌ Credenciales inválidas";
+  } catch (err) {
+    msg.textContent = "❌ " + err.message;
   }
 }
 
-// ======= CREAR PRÉSTAMO =======
+/* ========== REGISTRO ========== */
+async function registrar() {
+  const nombre = document.getElementById("regNombre").value;
+  const email = document.getElementById("regEmail").value;
+  const password = document.getElementById("regPassword").value;
+  const msg = document.getElementById("regMsg");
+
+  const res = await fetch(`${API_BASE}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nombre, email, password })
+  });
+
+  if (res.ok) {
+    msg.textContent = "✅ Usuario registrado correctamente";
+  } else {
+    msg.textContent = "❌ Error al registrar usuario";
+  }
+}
+
+/* ========== CREAR PRÉSTAMO ========== */
 async function crearPrestamo() {
   if (!usuarioActual) return alert("Inicia sesión primero");
   const body = {
-    usuarioId: usuarioActual.id,
     monto: parseFloat(document.getElementById("monto").value),
     interes: parseFloat(document.getElementById("interes").value),
     numeroCuotas: parseInt(document.getElementById("cuotas").value)
@@ -42,7 +62,7 @@ async function crearPrestamo() {
 
   const res = await fetch(`${API_BASE}/prestamos/crear?usuarioId=${usuarioActual.id}`, {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
   });
 
@@ -54,16 +74,15 @@ async function crearPrestamo() {
   }
 }
 
-// ======= LISTAR PRÉSTAMOS =======
+/* ========== LISTAR PRÉSTAMOS ========== */
 async function cargarPrestamos() {
   const cont = document.getElementById("listaPrestamos");
   cont.innerHTML = "Cargando...";
-  const res = await fetch(`${API_BASE}/prestamos`);
+  const res = await fetch(`${API_BASE}/prestamos/usuario/${usuarioActual.id}`);
   const prestamos = await res.json();
   cont.innerHTML = "";
 
-  prestamos.filter(p => p.usuario.id === usuarioActual.id)
-           .forEach(p => {
+  prestamos.forEach(p => {
     const div = document.createElement("div");
     div.className = "tarjeta";
     div.innerHTML = `
@@ -77,7 +96,7 @@ async function cargarPrestamos() {
   });
 }
 
-// ======= VER CUOTAS DE UN PRÉSTAMO =======
+/* ========== VER CUOTAS DE UN PRÉSTAMO ========== */
 async function verCuotas(prestamoId) {
   mostrarSeccion("cuotas");
   const cont = document.getElementById("listaCuotas");
@@ -101,7 +120,7 @@ async function verCuotas(prestamoId) {
   });
 }
 
-// ======= PAGAR CUOTA =======
+/* ========== PAGAR CUOTA ========== */
 async function pagarCuota(id) {
   const res = await fetch(`${API_BASE}/cuotas/${id}/pagar`, { method: "PUT" });
   if (res.ok) {
@@ -113,19 +132,19 @@ async function pagarCuota(id) {
   }
 }
 
-// ======= ENVÍO DE CORREO =======
+/* ========== ENVÍO DE CORREO ========== */
 async function enviarEmail() {
   const para = document.getElementById("emailPara").value;
   const asunto = document.getElementById("emailAsunto").value;
   const mensaje = document.getElementById("emailMensaje").value;
   const msg = document.getElementById("emailMsg");
 
-  const res = await fetch(`${API_BASE}/email/test`, {
+  const res = await fetch(`${API_BASE}/email/test/usuario/${usuarioActual ? usuarioActual.id : 1}`, {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ para, asunto, mensaje })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ asunto, mensaje })
   });
 
-  const texto = await res.text();
-  msg.textContent = texto.includes("enviado") ? "✅ Enviado correctamente" : "❌ Error";
+  const text = await res.text();
+  msg.textContent = text.includes("Correo enviado") ? "✅ Correo enviado correctamente" : "❌ Error al enviar";
 }
