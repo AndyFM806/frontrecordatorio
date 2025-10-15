@@ -268,45 +268,52 @@ document.addEventListener("DOMContentLoaded", async () => {
             (fechaNormalizada - hoy) / (1000 * 60 * 60 * 24);
           if (diffDias <= 2 && diffDias >= 0) proximas.push(c);
         });
+// 🧩 HTML del préstamo
+card.innerHTML = `
+  <div class="prestamo-header">
+    <h3>Préstamo #${p.id}</h3>
+    <span><strong>Monto:</strong> S/.${p.monto.toFixed(2)}</span>
+  </div>
 
-        // 🧩 HTML del préstamo
-        card.innerHTML = `
-          <div class="prestamo-header">
-            <h3>Préstamo #${p.id}</h3>
-            <span><strong>Monto:</strong> S/.${p.monto.toFixed(2)}</span>
-          </div>
-          <p><strong>Interés:</strong> ${p.interes}% | <strong>Emitido:</strong> ${p.fechaEmision}</p>
+  <p>
+    <strong>Interés:</strong> ${p.interes}% |
+    <strong>Emitido:</strong> ${p.fechaEmision}
+  </p>
 
-          ${
-            proximas.length > 0
-              ? `<div class="alerta-flotante">
-                  ⚠️ Tienes ${
-                    proximas.length === 1 ? "una deuda" : "varias deudas"
-                  } que vencen ${
-                    proximas.length === 1
-                      ? "el " + proximas[0].fechaVencimiento
-                      : "en las fechas: " +
-                        proximas.map((c) => c.fechaVencimiento).join(", ")
-                  }.
-                </div>`
-              : ""
-          }
+  ${
+    proximas.length > 0
+      ? `
+        <div class="alerta-flotante">
+          ⚠️ Tienes ${
+            proximas.length === 1 ? "una deuda" : "varias deudas"
+          } que vencen ${
+            proximas.length === 1
+              ? "el " + proximas[0].fechaVencimiento
+              : "en las fechas: " +
+                proximas.map((c) => c.fechaVencimiento).join(", ")
+          }.
+        </div>
+      `
+      : ""
+  }
 
   <div class="cuotas-list">
     ${p.cuotas
       .map(
         (c) => `
-        <div class="cuota-item">
-          <span>Cuota ${c.numero}</span>
-          <span>💰 S/.${c.monto.toFixed(2)}</span>
-          <span>📅 Vence: ${c.fechaVencimiento}</span>
-          <span class="estado ${c.estado.toLowerCase()}">${c.estado}</span>
-          ${
-            c.estado === "PENDIENTE"
-              ? `<button class="btnPagar" data-id="${c.id}">Pagar</button>`
-              : ""
-          }
-        </div>
+          <div class="cuota-item">
+            <span><strong>Cuota:</strong> ${c.numero}</span>
+            <span><strong>💰 Monto:</strong> S/.${c.monto.toFixed(2)}</span>
+            <span><strong>📅 Vence:</strong> ${c.fechaVencimiento}</span>
+            <span class="estado ${c.estado.toLowerCase()}">
+              ${c.estado}
+            </span>
+            ${
+              c.estado === "PENDIENTE"
+                ? `<button class="btnPagar" data-id="${c.id}">Pagar</button>`
+                : ""
+            }
+          </div>
         `
       )
       .join("")}
