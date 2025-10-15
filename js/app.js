@@ -1,4 +1,4 @@
-const API_BASE = "https://demo-pmeu.onrender.com/api";
+const API_BASE = "https://demo-pmeu.onrender.com";
 let usuarioActual = null;
 
 /* ========== NAVEGACIÓN ========== */
@@ -14,7 +14,7 @@ async function login() {
   const msg = document.getElementById("loginMsg");
 
   try {
-    const res = await fetch(`${API_BASE}/auth/login`, {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
@@ -38,7 +38,7 @@ async function registrar() {
   const password = document.getElementById("regPassword").value;
   const msg = document.getElementById("regMsg");
 
-  const res = await fetch(`${API_BASE}/auth/register`, {
+  const res = await fetch(`${API_BASE}/api/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ nombre, email, password })
@@ -60,7 +60,7 @@ async function crearPrestamo() {
     numeroCuotas: parseInt(document.getElementById("cuotas").value)
   };
 
-  const res = await fetch(`${API_BASE}/prestamos/crear?usuarioId=${usuarioActual.id}`, {
+  const res = await fetch(`${API_BASE}/api/prestamos/crear?usuarioId=${usuarioActual.id}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
@@ -78,7 +78,7 @@ async function crearPrestamo() {
 async function cargarPrestamos() {
   const cont = document.getElementById("listaPrestamos");
   cont.innerHTML = "Cargando...";
-  const res = await fetch(`${API_BASE}/prestamos/usuario/${usuarioActual.id}`);
+  const res = await fetch(`${API_BASE}/api/prestamos/usuario/${usuarioActual.id}`);
   const prestamos = await res.json();
   cont.innerHTML = "";
 
@@ -101,7 +101,7 @@ async function verCuotas(prestamoId) {
   mostrarSeccion("cuotas");
   const cont = document.getElementById("listaCuotas");
   cont.innerHTML = "Cargando...";
-  const res = await fetch(`${API_BASE}/cuotas/prestamo/${prestamoId}`);
+  const res = await fetch(`${API_BASE}/api/cuotas/prestamo/${prestamoId}`);
   const cuotas = await res.json();
   cont.innerHTML = "";
 
@@ -122,7 +122,7 @@ async function verCuotas(prestamoId) {
 
 /* ========== PAGAR CUOTA ========== */
 async function pagarCuota(id) {
-  const res = await fetch(`${API_BASE}/cuotas/${id}/pagar`, { method: "PUT" });
+  const res = await fetch(`${API_BASE}/api/cuotas/${id}/pagar`, { method: "PUT" });
   if (res.ok) {
     alert("💸 Cuota marcada como pagada");
     mostrarSeccion("prestamos");
@@ -139,7 +139,7 @@ async function enviarEmail() {
   const mensaje = document.getElementById("emailMensaje").value;
   const msg = document.getElementById("emailMsg");
 
-  const res = await fetch(`${API_BASE}/email/test/usuario/${usuarioActual ? usuarioActual.id : 1}`, {
+  const res = await fetch(`${API_BASE}/api/email/test/usuario/${usuarioActual ? usuarioActual.id : 1}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ asunto, mensaje })
