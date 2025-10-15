@@ -1,4 +1,4 @@
-const API_BASE = "https://demo-pmeu.onrender.com";
+const API_BASE = "https://demo-pmeu.onrender.com/api";
 let usuarioActual = null;
 
 /* ========== NAVEGACIÓN ========== */
