@@ -145,10 +145,16 @@
     }
 
     form {
-      margin-top: 25px;
+      margin-top: 10px;
       background: #ffe4ec;
       padding: 15px;
       border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    form h3 {
+      color: #ad1457;
+      margin-bottom: 10px;
     }
 
     form input {
@@ -172,6 +178,16 @@
   <main>
     <div id="alertas"></div>
 
+    <h2>➕ Registrar nuevo préstamo</h2>
+    <form id="formNuevoPrestamo">
+      <input type="number" id="monto" placeholder="Monto del préstamo (S/.)" required />
+      <input type="number" id="interes" placeholder="Interés (%)" required />
+      <input type="number" id="cuotas" placeholder="Número de cuotas" required />
+      <label for="fechaEmision"><strong>Fecha de emisión:</strong></label>
+      <input type="date" id="fechaEmision" required />
+      <button type="submit">Registrar préstamo</button>
+    </form>
+
     <h2>👤 Información del Usuario</h2>
     <p><strong>Nombre:</strong> <span id="userNombre">Cargando...</span></p>
     <p><strong>Correo:</strong> <span id="userCorreo">Cargando...</span></p>
@@ -180,14 +196,6 @@
     <div id="prestamosContainer">
       <p>Cargando tus préstamos...</p>
     </div>
-
-    <form id="formNuevoPrestamo">
-      <h3>➕ Registrar nuevo préstamo</h3>
-      <input type="number" id="monto" placeholder="Monto del préstamo" required />
-      <input type="number" id="interes" placeholder="Interés (%)" required />
-      <input type="number" id="cuotas" placeholder="Número de cuotas" required />
-      <button type="submit">Registrar</button>
-    </form>
 
     <div class="acciones">
       <button id="btnEnviarCorreo">📩 Enviar correo de prueba</button>
@@ -244,7 +252,7 @@
                     <span class="estado ${c.estado.toLowerCase()}">${c.estado}</span>
                     ${
                       c.estado === "PENDIENTE"
-                        ? `<button class="btnPagar" data-id="${c.id}">Marcar como pagada</button>`
+                        ? `<button class="btnPagar" data-id="${c.id}">Pagar</button>`
                         : ""
                     }
                   </div>`
@@ -268,8 +276,7 @@
             p.cuotas.forEach((c) => {
               const fechaV = new Date(c.fechaVencimiento);
               const hoy = new Date();
-              const diff =
-                (fechaV - hoy) / (1000 * 60 * 60 * 24); // días restantes
+              const diff = (fechaV - hoy) / (1000 * 60 * 60 * 24);
               if (c.estado === "PENDIENTE" && diff <= 2 && diff >= 0 && !alertaMostrada) {
                 alertas.innerHTML = `<div class="alerta">⚠️ Atención: tienes cuotas que vencen en menos de 2 días.</div>`;
                 alertaMostrada = true;
@@ -297,24 +304,28 @@
       cargarPrestamos();
 
       // 🔹 Registrar nuevo préstamo
-      document
-        .getElementById("formNuevoPrestamo")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const monto = document.getElementById("monto").value;
-          const interes = document.getElementById("interes").value;
-          const numeroCuotas = document.getElementById("cuotas").value;
+      document.getElementById("formNuevoPrestamo").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const monto = document.getElementById("monto").value;
+        const interes = document.getElementById("interes").value;
+        const numeroCuotas = document.getElementById("cuotas").value;
+        const fechaEmision = document.getElementById("fechaEmision").value;
 
-          await fetch(`${API_URL}/prestamos/crear?usuarioId=${userData.id}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ monto, interes, numeroCuotas }),
-          });
+        if (!fechaEmision) {
+          alert("⚠️ Debes seleccionar una fecha de emisión válida");
+          return;
+        }
 
-          alert("✅ Préstamo registrado con éxito");
-          e.target.reset();
-          cargarPrestamos();
+        await fetch(`${API_URL}/prestamos/crear?usuarioId=${userData.id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ monto, interes, numeroCuotas, fechaEmision }),
         });
+
+        alert("✅ Préstamo registrado con éxito");
+        e.target.reset();
+        cargarPrestamos();
+      });
 
       // 🔹 Enviar correo
       document.getElementById("btnEnviarCorreo").addEventListener("click", async () => {
