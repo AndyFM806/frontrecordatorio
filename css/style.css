@@ -1,159 +1,93 @@
-/* ======== BASE GENERAL ======== */
 body {
-  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-  background: linear-gradient(135deg, #f7dfe9, #fefbff);
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(to bottom, #ffeaf2, #ffffff);
+  color: #333;
+  text-align: center;
   margin: 0;
   padding: 0;
-  color: #333;
 }
 
-/* ======== ENCABEZADO ======== */
-header {
-  background: #f0a8c0; /* rosa pastel suave */
-  color: white;
-  text-align: center;
-  padding: 15px 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-header h1 {
-  font-weight: 600;
-  margin: 0;
-}
-
-/* ======== NAVEGACIÓN ======== */
-nav {
-  margin-top: 10px;
-}
-
-nav button {
-  background: #f6c7d6;
-  border: none;
-  color: #333;
-  padding: 10px 15px;
-  margin: 5px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s ease;
-}
-
-nav button:hover {
-  background: #f3aec4;
-}
-
-/* ======== SECCIONES ======== */
-main {
+.container {
+  background: white;
+  max-width: 450px;
+  margin: 50px auto;
   padding: 30px;
-  max-width: 900px;
-  margin: auto;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-.seccion {
-  display: none;
-  background: #fff;
-  border-radius: 15px;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-  padding: 25px 30px;
-  margin-bottom: 30px;
-  transition: transform 0.3s ease;
+h1 {
+  color: #c43e72;
 }
 
-.seccion.activa {
-  display: block;
-  animation: aparecer 0.3s ease-in;
-}
-
-@keyframes aparecer {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ======== ELEMENTOS DE FORMULARIO ======== */
-input, textarea {
-  width: 95%;
-  margin: 8px 0;
-  padding: 12px 14px;
-  border: 1px solid #f1b8c8;
-  border-radius: 8px;
-  background: #fff;
-  font-size: 14px;
-  outline: none;
-  transition: border 0.2s;
-}
-
-input:focus, textarea:focus {
-  border-color: #f08db0;
-  box-shadow: 0 0 5px rgba(240,141,176,0.3);
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 button {
-  background: #f08db0;
-  color: #fff;
+  background: #f48fb1;
+  color: white;
   border: none;
-  padding: 10px 22px;
-  border-radius: 8px;
+  border-radius: 10px;
+  padding: 10px 20px;
   cursor: pointer;
-  font-size: 14px;
-  transition: background 0.3s;
+  margin: 5px;
+  transition: 0.3s;
 }
 
 button:hover {
-  background: #e8799f;
+  background: #e57399;
 }
 
-/* ======== TARJETAS ======== */
-#listaPrestamos, #listaCuotas {
-  margin-top: 20px;
+button.active {
+  background: #d81b60;
 }
 
-.tarjeta {
-  background: #fff9fb;
-  border-left: 6px solid #f08db0;
+input {
+  width: 90%;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #f48fb1;
   border-radius: 10px;
-  padding: 12px 15px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.tarjeta strong {
-  color: #e65a8d;
+.error {
+  color: #d81b60;
 }
 
-/* ======== PIE DE PÁGINA ======== */
-footer {
-  text-align: center;
-  background: #f6c7d6;
-  color: #333;
-  padding: 15px 0;
-  font-size: 13px;
-  border-top: 1px solid #f1b8c8;
+.success {
+  color: #388e3c;
 }
 
-/* ======== MENSAJES Y DETALLES ======== */
-#loginMsg, #emailMsg {
-  margin-top: 10px;
-  font-weight: 500;
+.hidden {
+  display: none;
 }
 
-#loginMsg {
-  color: #e65a8d;
+.navbar {
+  background: #f8bbd0;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-#emailMsg {
-  color: #6d6d6d;
+.dashboard {
+  padding: 20px;
 }
 
-/* ======== BOTONES SECUNDARIOS ======== */
-.tarjeta button {
-  background: #f3aec4;
-  color: #333;
-  margin-top: 5px;
-  font-size: 13px;
-  padding: 8px 15px;
+.cards {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
 }
 
-.tarjeta button:hover {
-  background: #f08db0;
-  color: #fff;
+.card {
+  background: #fff0f5;
+  border-radius: 15px;
+  padding: 15px;
+  margin: 10px;
+  min-width: 150px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }

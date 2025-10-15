@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recordatorio Bancario - Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="navbar">
+    <h2>👤 Bienvenido <span id="userName"></span></h2>
+    <button id="logoutBtn">Cerrar sesión</button>
+  </div>
+
+  <div class="dashboard">
+    <h3>💰 Tus Préstamos y Cuotas</h3>
+
+    <div class="cards">
+      <section>
+        <h4>Préstamos</h4>
+        <div id="prestamosList"></div>
+      </section>
+
+      <section>
+        <h4>Cuotas Pendientes</h4>
+        <div id="cuotasList"></div>
+      </section>
+    </div>
+
+    <button id="btnCorreo">Enviar correo de prueba</button>
+    <p id="correoMsg" class="success"></p>
+  </div>
+
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

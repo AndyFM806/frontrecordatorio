@@ -1,160 +1,57 @@
 const API_URL = "https://demo-pmeu.onrender.com";
-let usuarioActual = null;
 
-/* ========== NAVEGACIÓN ========== */
-function mostrarSeccion(id) {
-  document.querySelectorAll(".seccion").forEach(sec => sec.classList.remove("activa"));
-  document.getElementById(id).classList.add("activa");
+document.getElementById("btnLogin").onclick = () => toggleForm("login");
+document.getElementById("btnRegister").onclick = () => toggleForm("register");
+
+function toggleForm(type) {
+  document.getElementById("loginForm").classList.toggle("hidden", type !== "login");
+  document.getElementById("registerForm").classList.toggle("hidden", type !== "register");
+  document.getElementById("btnLogin").classList.toggle("active", type === "login");
+  document.getElementById("btnRegister").classList.toggle("active", type === "register");
 }
 
-async function loginUser(event) {
-    event.preventDefault();
+// LOGIN
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
 
-    try {
-        const response = await fetch("https://demo-pmeu.onrender.com/auth/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password
-            })
-        });
+  try {
+    const res = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
 
-        if (!response.ok) {
-            throw new Error("Error al iniciar sesión");
-        }
+    if (!res.ok) throw new Error("Credenciales inválidas");
 
-        const user = await response.json();
-        console.log("Usuario logeado:", user);
+    const usuario = await res.json();
+    localStorage.setItem("usuario", JSON.stringify(usuario));
+    window.location.href = "dashboard.html";
+  } catch (err) {
+    document.getElementById("loginError").textContent = "❌ Credenciales inválidas";
+  }
+});
 
-        localStorage.setItem("usuario", JSON.stringify(user));
-        window.location.href = "prestamos.html"; // o el dashboard que corresponda
+// REGISTRO
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    } catch (error) {
-        console.error("Error:", error);
-        document.getElementById("error-msg").textContent = "❌ Credenciales inválidas";
-    }
-}
-
-/* ========== REGISTRO ========== */
-async function registrar() {
   const nombre = document.getElementById("regNombre").value;
   const email = document.getElementById("regEmail").value;
   const password = document.getElementById("regPassword").value;
-  const msg = document.getElementById("regMsg");
 
-  const res = await fetch(`${API_BASE}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nombre, email, password })
-  });
+  try {
+    const res = await fetch(`${API_URL}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre, email, password })
+    });
 
-  if (res.ok) {
-    msg.textContent = "✅ Usuario registrado correctamente";
-  } else {
-    msg.textContent = "❌ Error al registrar usuario";
+    if (!res.ok) throw new Error("Error al registrar");
+    document.getElementById("registerMsg").textContent = "✅ Usuario registrado correctamente";
+  } catch (err) {
+    document.getElementById("registerMsg").textContent = "❌ Error al registrar";
   }
-}
-
-/* ========== CREAR PRÉSTAMO ========== */
-async function crearPrestamo() {
-  if (!usuarioActual) return alert("Inicia sesión primero");
-  const body = {
-    monto: parseFloat(document.getElementById("monto").value),
-    interes: parseFloat(document.getElementById("interes").value),
-    numeroCuotas: parseInt(document.getElementById("cuotas").value)
-  };
-
-  const res = await fetch(`${API_BASE}/prestamos/crear?usuarioId=${usuarioActual.id}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-
-  if (res.ok) {
-    alert("✅ Préstamo registrado");
-    cargarPrestamos();
-  } else {
-    alert("❌ Error al registrar préstamo");
-  }
-}
-
-/* ========== LISTAR PRÉSTAMOS ========== */
-async function cargarPrestamos() {
-  const cont = document.getElementById("listaPrestamos");
-  cont.innerHTML = "Cargando...";
-  const res = await fetch(`${API_BASE}/prestamos/usuario/${usuarioActual.id}`);
-  const prestamos = await res.json();
-  cont.innerHTML = "";
-
-  prestamos.forEach(p => {
-    const div = document.createElement("div");
-    div.className = "tarjeta";
-    div.innerHTML = `
-      <strong>Préstamo #${p.id}</strong><br>
-      Monto: ${p.monto}<br>
-      Interés: ${p.interes}%<br>
-      Cuotas: ${p.numeroCuotas}<br>
-      <button onclick="verCuotas(${p.id})">Ver cuotas</button>
-    `;
-    cont.appendChild(div);
-  });
-}
-
-/* ========== VER CUOTAS DE UN PRÉSTAMO ========== */
-async function verCuotas(prestamoId) {
-  mostrarSeccion("cuotas");
-  const cont = document.getElementById("listaCuotas");
-  cont.innerHTML = "Cargando...";
-  const res = await fetch(`${API_BASE}/cuotas/prestamo/${prestamoId}`);
-  const cuotas = await res.json();
-  cont.innerHTML = "";
-
-  cuotas.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "tarjeta";
-    div.innerHTML = `
-      <strong>Cuota #${c.numero}</strong><br>
-      Monto: ${c.monto}<br>
-      Vence: ${c.fechaVencimiento}<br>
-      Estado: ${c.estado}<br>
-      ${c.estado === 'PENDIENTE' ?
-        `<button onclick="pagarCuota(${c.id})">Marcar pagada</button>` : ''}
-    `;
-    cont.appendChild(div);
-  });
-}
-
-/* ========== PAGAR CUOTA ========== */
-async function pagarCuota(id) {
-  const res = await fetch(`${API_BASE}/cuotas/${id}/pagar`, { method: "PUT" });
-  if (res.ok) {
-    alert("💸 Cuota marcada como pagada");
-    mostrarSeccion("prestamos");
-    cargarPrestamos();
-  } else {
-    alert("❌ Error al pagar cuota");
-  }
-}
-
-/* ========== ENVÍO DE CORREO ========== */
-async function enviarEmail() {
-  const para = document.getElementById("emailPara").value;
-  const asunto = document.getElementById("emailAsunto").value;
-  const mensaje = document.getElementById("emailMensaje").value;
-  const msg = document.getElementById("emailMsg");
-
-  const res = await fetch(`${API_BASE}/email/test/usuario/${usuarioActual ? usuarioActual.id : 1}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ asunto, mensaje })
-  });
-
-  const text = await res.text();
-  msg.textContent = text.includes("Correo enviado") ? "✅ Correo enviado correctamente" : "❌ Error al enviar";
-}
+});
