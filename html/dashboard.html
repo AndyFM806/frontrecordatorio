@@ -384,13 +384,8 @@ document.getElementById("btnEnviarCorreo").addEventListener("click", async () =>
     const mensaje = await res.text();
 
     // Mostrar notificación contextual
-    if (mensaje.includes("✅")) {
+    
       alert("✅ " + mensaje);
-    } else if (mensaje.includes("📭")) {
-      alert("📭 " + mensaje);
-    } else {
-      alert("⚠️ Respuesta inesperada: " + mensaje);
-    }
 
   } catch (err) {
     console.error(err);
