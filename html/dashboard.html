@@ -366,10 +366,41 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // 🔹 Enviar correo
-  document.getElementById("btnEnviarCorreo").addEventListener("click", async () => {
-    await fetch(`${API_URL}/email/test/usuario/${userData.id}`, { method: "POST" });
-    alert("✅ Correo de prueba enviado.");
-  });
+  // 🔹 Enviar correos de prueba (cuotas próximas a vencer)
+document.getElementById("btnEnviarCorreo").addEventListener("click", async () => {
+  const btn = document.getElementById("btnEnviarCorreo");
+  btn.disabled = true;
+  btn.textContent = "Enviando correos... ⏳";
+
+  try {
+    const res = await fetch(`${API_URL}/email/test/usuario/${userData.id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}"
+    });
+
+    if (!res.ok) throw new Error("Error al comunicarse con el servidor");
+
+    const mensaje = await res.text();
+
+    // Mostrar notificación contextual
+    if (mensaje.includes("✅")) {
+      alert("✅ " + mensaje);
+    } else if (mensaje.includes("📭")) {
+      alert("📭 " + mensaje);
+    } else {
+      alert("⚠️ Respuesta inesperada: " + mensaje);
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ Error al intentar enviar los correos de prueba.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "📧 Enviar correos de prueba";
+  }
+});
+
 
   // 🔹 Logout
   document.getElementById("btnLogout").addEventListener("click", () => {
