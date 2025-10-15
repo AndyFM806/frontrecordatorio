@@ -270,11 +270,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 card.innerHTML = `
   <div class="prestamo-header">
-    <h3>Préstamo #${p.id}</h3>
+    <h3>Préstamo emitido en:  #${p.fechaEmision}</h3>
     <span><strong>Monto:</strong> S/.${p.monto.toFixed(2)}</span>
   </div>
 
-  <p><strong>Interés:</strong> ${p.interes}% | <strong>Emitido:</strong> ${p.fechaEmision}</p>
+  <p><strong>Interés:</strong> ${p.interes}%</p>
 
   ${
     proximas.length > 0
