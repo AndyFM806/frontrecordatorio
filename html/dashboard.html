@@ -170,6 +170,23 @@
       margin-top: 10px;
       width: 100%;
     }
+    .alerta-flotante {
+  background: #ffebee;
+  border-left: 5px solid #e53935;
+  padding: 8px 12px;
+  margin: 10px 0 12px;
+  border-radius: 6px;
+  color: #b71c1c;
+  font-size: 0.9rem;
+  font-weight: 500;
+  animation: blink 1.3s ease-in-out infinite alternate;
+}
+
+@keyframes blink {
+  from { background-color: #ffebee; }
+  to { background-color: #ffcdd2; }
+}
+
   </style>
 </head>
 <body>
@@ -221,94 +238,97 @@
       document.getElementById("userCorreo").textContent = userData.email;
 
       // 🔹 Cargar préstamos
-      async function cargarPrestamos() {
-        try {
-          const res = await fetch(`${API_URL}/prestamos/usuario/${userData.id}`);
-          const prestamos = await res.json();
-          prestamosContainer.innerHTML = "";
+// 🔹 Cargar préstamos con alertas contextuales
+async function cargarPrestamos() {
+  try {
+    const res = await fetch(`${API_URL}/prestamos/usuario/${userData.id}`);
+    const prestamos = await res.json();
+    prestamosContainer.innerHTML = "";
 
-          if (!prestamos.length) {
-            prestamosContainer.innerHTML = `<p>No tienes préstamos registrados.</p>`;
-            return;
-          }
+    if (!prestamos.length) {
+      prestamosContainer.innerHTML = `<p>No tienes préstamos registrados.</p>`;
+      return;
+    }
 
-          // detectar alertas de vencimiento
-          let alertaMostrada = false;
-          prestamos.forEach((p) => {
-            const card = document.createElement("div");
-            card.classList.add("prestamo-card");
-            card.innerHTML = `
-              <div class="prestamo-header">
-                <h3>Préstamo #${p.id}</h3>
-                <span><strong>Monto:</strong> S/.${p.monto.toFixed(2)}</span>
-              </div>
-              <p><strong>Interés:</strong> ${p.interes}% | <strong>Emitido:</strong> ${p.fechaEmision}</p>
-              <div class="cuotas-list">
-                ${p.cuotas
-                  .map(
-                    (c) => `
-                  <div class="cuota-item">
-                    <span>Cuota ${c.numero} - vence ${c.fechaVencimiento}</span>
-                    <span class="estado ${c.estado.toLowerCase()}">${c.estado}</span>
-                    ${
-                      c.estado === "PENDIENTE"
-                        ? `<button class="btnPagar" data-id="${c.id}">Pagar</button>`
-                        : ""
-                    }
-                  </div>`
-                  )
-                  .join("")}
-              </div>
-            `;
+    prestamos.forEach((p) => {
+      const card = document.createElement("div");
+      card.classList.add("prestamo-card");
 
-            // toggle de cuotas
-            const cuotasDiv = card.querySelector(".cuotas-list");
-            card.addEventListener("click", (e) => {
-              if (!e.target.classList.contains("btnPagar")) {
-                cuotasDiv.style.display =
-                  cuotasDiv.style.display === "block" ? "none" : "block";
-              }
-            });
+      // 📅 Buscar cuotas próximas a vencer (<= 2 días)
+      const hoy = new Date();
+      const proximas = p.cuotas.filter((c) => {
+        if (c.estado !== "PENDIENTE") return false;
+        const fv = new Date(c.fechaVencimiento);
+        const fechaV = new Date(fv.getFullYear(), fv.getMonth(), fv.getDate());
+        const fHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+        const diffDias = (fechaV - fHoy) / (1000 * 60 * 60 * 24);
+        return diffDias <= 2 && diffDias >= 0;
+      });
 
-            prestamosContainer.appendChild(card);
-
-            // alertas por vencimiento cercano
-            // 🔔 alertas por vencimiento cercano (con fechas normalizadas)
-            p.cuotas.forEach((c) => {
-            const fechaV = new Date(c.fechaVencimiento);
-            const hoy = new Date();
-
-            // Normalizamos ambas fechas al inicio del día (sin horas)
-            const fechaVencimiento = new Date(fechaV.getFullYear(), fechaV.getMonth(), fechaV.getDate());
-            const fechaHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-
-            const diffDias = (fechaVencimiento - fechaHoy) / (1000 * 60 * 60 * 24);
-
-            // Mostrar alerta si vence hoy, mañana o pasado mañana
-            if (c.estado === "PENDIENTE" && diffDias <= 2 && diffDias >= 0 && !alertaMostrada) {
-                alertas.innerHTML = `<div class="alerta">⚠️ Atención: tienes cuotas que vencen en ${Math.floor(diffDias)} día(s) o menos.</div>`;
-                alertaMostrada = true;
-            }
-            });
-
-          });
-
-          // listeners de pagar
-          document.querySelectorAll(".btnPagar").forEach((btn) => {
-            btn.addEventListener("click", async (e) => {
-              e.stopPropagation();
-              const cuotaId = btn.getAttribute("data-id");
-              await fetch(`${API_URL}/cuotas/${cuotaId}/pagar`, { method: "PUT" });
-              alert("✅ Cuota marcada como pagada");
-              cargarPrestamos();
-            });
-          });
-        } catch (err) {
-          prestamosContainer.innerHTML =
-            "<p style='color:red;'>Error al cargar préstamos.</p>";
-          console.error(err);
+      // 🧩 Generar HTML del préstamo
+      card.innerHTML = `
+        <div class="prestamo-header">
+          <h3>Préstamo #${p.id}</h3>
+          <span><strong>Monto:</strong> S/.${p.monto.toFixed(2)}</span>
+        </div>
+        <p><strong>Interés:</strong> ${p.interes}% | <strong>Emitido:</strong> ${p.fechaEmision}</p>
+        ${
+          proximas.length > 0
+            ? `<div class="alerta-flotante">
+                ⚠️ ${proximas.length === 1 ? "Tienes una cuota" : "Tienes cuotas"} que vencen el 
+                <strong>${proximas
+                  .map((c) => c.fechaVencimiento)
+                  .join(", ")}</strong>
+              </div>`
+            : ""
         }
-      }
+        <div class="cuotas-list">
+          ${p.cuotas
+            .map(
+              (c) => `
+            <div class="cuota-item">
+              <span>Cuota ${c.numero} - vence ${c.fechaVencimiento}</span>
+              <span class="estado ${c.estado.toLowerCase()}">${c.estado}</span>
+              ${
+                c.estado === "PENDIENTE"
+                  ? `<button class="btnPagar" data-id="${c.id}">Pagar</button>`
+                  : ""
+              }
+            </div>`
+            )
+            .join("")}
+        </div>
+      `;
+
+      // 🎯 Comportamiento expandible
+      const cuotasDiv = card.querySelector(".cuotas-list");
+      card.addEventListener("click", (e) => {
+        if (!e.target.classList.contains("btnPagar")) {
+          cuotasDiv.style.display =
+            cuotasDiv.style.display === "block" ? "none" : "block";
+        }
+      });
+
+      prestamosContainer.appendChild(card);
+    });
+
+    // 🎯 Listeners para pagar
+    document.querySelectorAll(".btnPagar").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const cuotaId = btn.getAttribute("data-id");
+        await fetch(`${API_URL}/cuotas/${cuotaId}/pagar`, { method: "PUT" });
+        alert("✅ Cuota marcada como pagada");
+        cargarPrestamos();
+      });
+    });
+  } catch (err) {
+    prestamosContainer.innerHTML =
+      "<p style='color:red;'>Error al cargar préstamos.</p>";
+    console.error(err);
+  }
+}
+
 
       cargarPrestamos();
 
