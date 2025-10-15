@@ -3,33 +3,147 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recordatorio Bancario - Dashboard</title>
+  <title>Panel - Recordatorio Bancario</title>
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #ffd4e2 0%, #fff 100%);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      background: #c2185b;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    main {
+      margin-top: 40px;
+      width: 90%;
+      max-width: 1000px;
+      background: white;
+      border-radius: 16px;
+      padding: 30px 40px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      color: #ad1457;
+      border-bottom: 2px solid #f8bbd0;
+      padding-bottom: 5px;
+      margin-top: 30px;
+    }
+
+    .prestamo-card {
+      background: #fff0f5;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: 0.2s;
+    }
+
+    .prestamo-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .prestamo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cuotas-list {
+      margin-top: 10px;
+      padding-left: 15px;
+    }
+
+    .cuota-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #f2b5c3;
+      padding: 8px 0;
+      font-size: 0.95rem;
+    }
+
+    .estado {
+      font-weight: bold;
+    }
+
+    .pendiente {
+      color: #e53935;
+    }
+
+    .pagada {
+      color: #43a047;
+    }
+
+    .acciones {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button {
+      background: #c2185b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #ad1457;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      margin-top: auto;
+      text-align: center;
+      font-size: 13px;
+      color: #777;
+      padding: 20px 0;
+    }
+
+  </style>
 </head>
 <body>
-  <div class="navbar">
-    <h2>👤 Bienvenido <span id="userName"></span></h2>
-    <button id="logoutBtn">Cerrar sesión</button>
-  </div>
+  <header>
+    Bienvenido al Panel de Control
+  </header>
 
-  <div class="dashboard">
-    <h3>💰 Tus Préstamos y Cuotas</h3>
+  <main>
+    <h2>👤 Información del Usuario</h2>
+    <p><strong>Nombre:</strong> <span id="userNombre">Cargando...</span></p>
+    <p><strong>Correo:</strong> <span id="userCorreo">Cargando...</span></p>
 
-    <div class="cards">
-      <section>
-        <h4>Préstamos</h4>
-        <div id="prestamosList"></div>
-      </section>
-
-      <section>
-        <h4>Cuotas Pendientes</h4>
-        <div id="cuotasList"></div>
-      </section>
+    <h2>💰 Tus Préstamos y Cuotas</h2>
+    <div id="prestamosContainer">
+      <p>Cargando tus préstamos...</p>
     </div>
 
-    <button id="btnCorreo">Enviar correo de prueba</button>
-    <p id="correoMsg" class="success"></p>
-  </div>
+    <div class="acciones">
+      <button id="btnEnviarCorreo">📩 Enviar correo de prueba</button>
+      <button id="btnLogout">🚪 Cerrar sesión</button>
+    </div>
+  </main>
+
+  <footer>© 2025 Recordatorio Bancario</footer>
 
   <script src="../js/dashboard.js"></script>
 </body>
