@@ -1,4 +1,4 @@
-const API_URL = "https://demo-pmeu.onrender.com/api";
+const API_URL = "https://demo-pmeu.onrender.com";
 let usuarioActual = null;
 
 /* ========== NAVEGACIÓN ========== */
@@ -14,7 +14,7 @@ async function loginUser(event) {
     const password = document.getElementById("password").value;
 
     try {
-        const response = await fetch("https://demo-pmeu.onrender.com/api/auth/login", {
+        const response = await fetch("https://demo-pmeu.onrender.com/auth/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
