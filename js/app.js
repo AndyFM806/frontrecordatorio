@@ -7,28 +7,38 @@ function mostrarSeccion(id) {
   document.getElementById(id).classList.add("activa");
 }
 
-/* ========== LOGIN ========== */
-async function login() {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-  const msg = document.getElementById("loginMsg");
+async function loginUser(event) {
+    event.preventDefault();
 
-  try {
-    const res = await fetch(`https://demo-pmeu.onrender.com/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-    if (!res.ok) throw new Error("Credenciales inválidas");
+    try {
+        const response = await fetch("https://demo-pmeu.onrender.com/api/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
 
-    usuarioActual = await res.json();
-    msg.textContent = "✅ Bienvenido, " + usuarioActual.nombre;
-    mostrarSeccion('prestamos');
-    cargarPrestamos();
-  } catch (err) {
-    msg.textContent = "❌ " + err.message;
-  }
+        if (!response.ok) {
+            throw new Error("Error al iniciar sesión");
+        }
+
+        const user = await response.json();
+        console.log("Usuario logeado:", user);
+
+        localStorage.setItem("usuario", JSON.stringify(user));
+        window.location.href = "prestamos.html"; // o el dashboard que corresponda
+
+    } catch (error) {
+        console.error("Error:", error);
+        document.getElementById("error-msg").textContent = "❌ Credenciales inválidas";
+    }
 }
 
 /* ========== REGISTRO ========== */
