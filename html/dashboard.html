@@ -273,15 +273,24 @@
             prestamosContainer.appendChild(card);
 
             // alertas por vencimiento cercano
+            // 🔔 alertas por vencimiento cercano (con fechas normalizadas)
             p.cuotas.forEach((c) => {
-              const fechaV = new Date(c.fechaVencimiento);
-              const hoy = new Date();
-              const diff = (fechaV - hoy) / (1000 * 60 * 60 * 24);
-              if (c.estado === "PENDIENTE" && diff <= 2 && diff >= 0 && !alertaMostrada) {
-                alertas.innerHTML = `<div class="alerta">⚠️ Atención: tienes cuotas que vencen en menos de 2 días.</div>`;
+            const fechaV = new Date(c.fechaVencimiento);
+            const hoy = new Date();
+
+            // Normalizamos ambas fechas al inicio del día (sin horas)
+            const fechaVencimiento = new Date(fechaV.getFullYear(), fechaV.getMonth(), fechaV.getDate());
+            const fechaHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+
+            const diffDias = (fechaVencimiento - fechaHoy) / (1000 * 60 * 60 * 24);
+
+            // Mostrar alerta si vence hoy, mañana o pasado mañana
+            if (c.estado === "PENDIENTE" && diffDias <= 2 && diffDias >= 0 && !alertaMostrada) {
+                alertas.innerHTML = `<div class="alerta">⚠️ Atención: tienes cuotas que vencen en ${Math.floor(diffDias)} día(s) o menos.</div>`;
                 alertaMostrada = true;
-              }
+            }
             });
+
           });
 
           // listeners de pagar
