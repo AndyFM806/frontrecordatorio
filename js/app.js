@@ -14,7 +14,7 @@ async function login() {
   const msg = document.getElementById("loginMsg");
 
   try {
-    const res = await fetch(`${API_BASE}/auth/login`, {
+    const res = await fetch(`https://demo-pmeu.onrender.com/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
