@@ -292,19 +292,17 @@ document.addEventListener("DOMContentLoaded", async () => {
               : ""
           }
 
-          <div class="cuotas-list">
-            ${p.cuotas
-              .map(
-                (c) => `
-              <div class="cuota-item">
-                <span>Cuota ${c.numero} - vence ${c.fechaVencimiento}</span>
-                <span class="estado ${c.estado.toLowerCase()}">${c.estado}</span>
-                ${
-                  c.estado === "PENDIENTE"
-                    ? `<button class="btnPagar" data-id="${c.id}">Pagar</button>`
-                    : ""
-                }
-              </div>`
+          <div class="cuota-item">
+              <span>Cuota ${c.numero}</span>
+              <span>💰 S/.${c.monto.toFixed(2)}</span>
+              <span>📅 ${c.fechaVencimiento}</span>
+              <span class="estado ${c.estado.toLowerCase()}">${c.estado}</span>
+              ${
+                c.estado === "PENDIENTE"
+                  ? `<button class="btnPagar" data-id="${c.id}">Pagar</button>`
+                  : ""
+              }
+            </div>
               )
               .join("")}
           </div>
