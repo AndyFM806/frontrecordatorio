@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Recordatorio Bancario</title>
-  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="css/style.css" />
   <style>
-    /* ====== ESTILOS ADICIONALES ESPECÍFICOS ====== */
-
     body {
       font-family: "Segoe UI", sans-serif;
       background: linear-gradient(180deg, #ffd4e2 0%, #fff 100%);
@@ -17,7 +15,6 @@
       min-height: 100vh;
       margin: 0;
     }
-
     .main-container {
       background: #ffffff;
       width: 420px;
@@ -26,20 +23,17 @@
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
       text-align: center;
     }
-
     h1 {
       color: #c2185b;
       font-weight: 700;
       margin-bottom: 25px;
     }
-
     .tabs {
       display: flex;
       justify-content: center;
       gap: 15px;
       margin-bottom: 25px;
     }
-
     .tabs button {
       background: #f8bbd0;
       color: #444;
@@ -50,13 +44,11 @@
       cursor: pointer;
       transition: all 0.3s ease;
     }
-
     .tabs button.active {
       background: #c2185b;
       color: #fff;
       transform: scale(1.05);
     }
-
     form {
       display: flex;
       flex-direction: column;
@@ -64,7 +56,6 @@
       gap: 10px;
       margin-top: 10px;
     }
-
     input {
       width: 90%;
       padding: 10px 12px;
@@ -74,12 +65,10 @@
       outline: none;
       transition: 0.2s;
     }
-
     input:focus {
       border-color: #c2185b;
       box-shadow: 0 0 4px rgba(194, 24, 91, 0.3);
     }
-
     button[type="submit"] {
       background: #c2185b;
       color: white;
@@ -92,27 +81,22 @@
       width: 70%;
       transition: 0.3s;
     }
-
     button[type="submit"]:hover {
       background: #ad1457;
       transform: translateY(-1px);
     }
-
     .error {
       color: #d32f2f;
       margin-top: 8px;
       font-size: 14px;
     }
-
     .success {
       color: #388e3c;
       font-size: 14px;
     }
-
     .hidden {
       display: none;
     }
-
     footer {
       text-align: center;
       font-size: 13px;
@@ -133,17 +117,17 @@
 
     <!-- LOGIN -->
     <form id="loginForm">
-      <input type="email" id="loginEmail" placeholder="Correo electrónico" required>
-      <input type="password" id="loginPassword" placeholder="Contraseña" required>
+      <input type="email" id="loginEmail" placeholder="Correo electrónico" required />
+      <input type="password" id="loginPassword" placeholder="Contraseña" required />
       <button type="submit">Entrar</button>
       <p id="loginError" class="error"></p>
     </form>
 
     <!-- REGISTRO -->
     <form id="registerForm" class="hidden">
-      <input type="text" id="regNombre" placeholder="Nombre completo" required>
-      <input type="email" id="regEmail" placeholder="Correo electrónico" required>
-      <input type="password" id="regPassword" placeholder="Contraseña" required>
+      <input type="text" id="regNombre" placeholder="Nombre completo" required />
+      <input type="email" id="regEmail" placeholder="Correo electrónico" required />
+      <input type="password" id="regPassword" placeholder="Contraseña" required />
       <button type="submit">Registrarse</button>
       <p id="registerMsg" class="success"></p>
     </form>
@@ -151,7 +135,91 @@
     <footer>© 2025 Recordatorio Bancario</footer>
   </div>
 
-  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const API_URL = "https://demo-pmeu.onrender.com/api";
+
+      const btnLogin = document.getElementById("btnLogin");
+      const btnRegister = document.getElementById("btnRegister");
+      const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
+      const loginError = document.getElementById("loginError");
+      const registerMsg = document.getElementById("registerMsg");
+
+      // Cambiar entre login y registro
+      btnLogin.addEventListener("click", () => {
+        loginForm.classList.remove("hidden");
+        registerForm.classList.add("hidden");
+        btnLogin.classList.add("active");
+        btnRegister.classList.remove("active");
+        loginError.textContent = "";
+        registerMsg.textContent = "";
+      });
+
+      btnRegister.addEventListener("click", () => {
+        registerForm.classList.remove("hidden");
+        loginForm.classList.add("hidden");
+        btnRegister.classList.add("active");
+        btnLogin.classList.remove("active");
+        loginError.textContent = "";
+        registerMsg.textContent = "";
+      });
+
+      // LOGIN
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value.trim();
+
+        loginError.textContent = "";
+
+        try {
+          const res = await fetch(`${API_URL}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          if (!res.ok) {
+            throw new Error("Credenciales inválidas");
+          }
+
+          const usuario = await res.json();
+          localStorage.setItem("usuario", JSON.stringify(usuario));
+          window.location.href = "dashboard.html";
+        } catch (err) {
+          loginError.textContent = "❌ Credenciales inválidas";
+          console.error("Error login:", err);
+        }
+      });
+
+      // REGISTRO
+      registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const nombre = document.getElementById("regNombre").value.trim();
+        const email = document.getElementById("regEmail").value.trim();
+        const password = document.getElementById("regPassword").value.trim();
+
+        registerMsg.textContent = "";
+
+        try {
+          const res = await fetch(`${API_URL}/auth/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombre, email, password }),
+          });
+
+          if (!res.ok) throw new Error("Error al registrar");
+
+          registerMsg.textContent = "✅ Usuario registrado correctamente. Ahora inicia sesión.";
+          registerForm.reset();
+        } catch (err) {
+          registerMsg.textContent = "❌ Error al registrar usuario";
+          console.error("Error registro:", err);
+        }
+      });
+    });
+  </script>
 </body>
 </html>
-
