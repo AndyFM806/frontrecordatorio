@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel - Recordatorio Bancario</title>
-  <link rel="stylesheet" href="../css/style.css">
   <style>
     body {
       font-family: "Segoe UI", sans-serif;
@@ -24,17 +23,17 @@
       text-align: center;
       font-size: 1.5rem;
       font-weight: 600;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     main {
       margin-top: 40px;
-      width: 90%;
+      width: 95%;
       max-width: 1000px;
       background: white;
       border-radius: 16px;
       padding: 30px 40px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
 
     h2 {
@@ -49,13 +48,14 @@
       border-radius: 10px;
       padding: 15px;
       margin: 15px 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
       transition: 0.2s;
     }
 
     .prestamo-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .prestamo-header {
@@ -65,13 +65,27 @@
     }
 
     .cuotas-list {
+      display: none;
       margin-top: 10px;
       padding-left: 15px;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .cuota-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       border-bottom: 1px solid #f2b5c3;
       padding: 8px 0;
       font-size: 0.95rem;
@@ -94,6 +108,7 @@
       display: flex;
       justify-content: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     button {
@@ -120,14 +135,43 @@
       padding: 20px 0;
     }
 
+    .alerta {
+      background: #ffebee;
+      border-left: 5px solid #e53935;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      color: #c62828;
+    }
+
+    form {
+      margin-top: 25px;
+      background: #ffe4ec;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    form input {
+      display: block;
+      margin: 10px 0;
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #f48fb1;
+      border-radius: 6px;
+    }
+
+    form button {
+      margin-top: 10px;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
-  <header>
-    Bienvenido al Panel de Control
-  </header>
+  <header>Bienvenido al Panel de Control</header>
 
   <main>
+    <div id="alertas"></div>
+
     <h2>👤 Información del Usuario</h2>
     <p><strong>Nombre:</strong> <span id="userNombre">Cargando...</span></p>
     <p><strong>Correo:</strong> <span id="userCorreo">Cargando...</span></p>
@@ -136,6 +180,14 @@
     <div id="prestamosContainer">
       <p>Cargando tus préstamos...</p>
     </div>
+
+    <form id="formNuevoPrestamo">
+      <h3>➕ Registrar nuevo préstamo</h3>
+      <input type="number" id="monto" placeholder="Monto del préstamo" required />
+      <input type="number" id="interes" placeholder="Interés (%)" required />
+      <input type="number" id="cuotas" placeholder="Número de cuotas" required />
+      <button type="submit">Registrar</button>
+    </form>
 
     <div class="acciones">
       <button id="btnEnviarCorreo">📩 Enviar correo de prueba</button>
@@ -146,86 +198,136 @@
   <footer>© 2025 Recordatorio Bancario</footer>
 
   <script>
-document.addEventListener("DOMContentLoaded", async () => {
-  const API_URL = "https://demo-pmeu.onrender.com"; // sin /api
+    document.addEventListener("DOMContentLoaded", async () => {
+      const API_URL = "https://demo-pmeu.onrender.com";
+      const userData = JSON.parse(localStorage.getItem("usuario"));
+      const prestamosContainer = document.getElementById("prestamosContainer");
+      const alertas = document.getElementById("alertas");
 
-  const userData = JSON.parse(localStorage.getItem("usuario"));
-  const userNombre = document.getElementById("userNombre");
-  const userCorreo = document.getElementById("userCorreo");
-  const prestamosContainer = document.getElementById("prestamosContainer");
-  const btnLogout = document.getElementById("btnLogout");
-  const btnEnviarCorreo = document.getElementById("btnEnviarCorreo");
-
-  if (!userData) {
-    window.location.href = "index.html";
-    return;
-  }
-
-  userNombre.textContent = userData.nombre;
-  userCorreo.textContent = userData.email;
-
-  async function cargarPrestamos() {
-    try {
-      const res = await fetch(`${API_URL}/prestamos/usuario/${userData.id}`);
-      if (!res.ok) throw new Error("Error al obtener préstamos");
-      const prestamos = await res.json();
-
-      if (!prestamos.length) {
-        prestamosContainer.innerHTML = `<p>No tienes préstamos registrados.</p>`;
+      if (!userData) {
+        window.location.href = "index.html";
         return;
       }
 
-      prestamosContainer.innerHTML = "";
-      prestamos.forEach((p) => {
-        const card = document.createElement("div");
-        card.classList.add("prestamo-card");
-        card.innerHTML = `
-          <div class="prestamo-header">
-            <h3>Préstamo #${p.id}</h3>
-            <span><strong>Monto:</strong> S/.${p.monto.toFixed(2)}</span>
-          </div>
-          <p><strong>Interés:</strong> ${p.interes}%</p>
-          <p><strong>Emitido:</strong> ${p.fechaEmision}</p>
-          <p><strong>Cuotas:</strong></p>
-          <div class="cuotas-list">
-            ${p.cuotas.map(c => `
-              <div class="cuota-item">
-                <span>Cuota ${c.numero} - vence ${c.fechaVencimiento}</span>
-                <span class="estado ${c.estado.toLowerCase()}">${c.estado}</span>
+      document.getElementById("userNombre").textContent = userData.nombre;
+      document.getElementById("userCorreo").textContent = userData.email;
+
+      // 🔹 Cargar préstamos
+      async function cargarPrestamos() {
+        try {
+          const res = await fetch(`${API_URL}/prestamos/usuario/${userData.id}`);
+          const prestamos = await res.json();
+          prestamosContainer.innerHTML = "";
+
+          if (!prestamos.length) {
+            prestamosContainer.innerHTML = `<p>No tienes préstamos registrados.</p>`;
+            return;
+          }
+
+          // detectar alertas de vencimiento
+          let alertaMostrada = false;
+          prestamos.forEach((p) => {
+            const card = document.createElement("div");
+            card.classList.add("prestamo-card");
+            card.innerHTML = `
+              <div class="prestamo-header">
+                <h3>Préstamo #${p.id}</h3>
+                <span><strong>Monto:</strong> S/.${p.monto.toFixed(2)}</span>
               </div>
-            `).join("")}
-          </div>
-        `;
-        prestamosContainer.appendChild(card);
+              <p><strong>Interés:</strong> ${p.interes}% | <strong>Emitido:</strong> ${p.fechaEmision}</p>
+              <div class="cuotas-list">
+                ${p.cuotas
+                  .map(
+                    (c) => `
+                  <div class="cuota-item">
+                    <span>Cuota ${c.numero} - vence ${c.fechaVencimiento}</span>
+                    <span class="estado ${c.estado.toLowerCase()}">${c.estado}</span>
+                    ${
+                      c.estado === "PENDIENTE"
+                        ? `<button class="btnPagar" data-id="${c.id}">Marcar como pagada</button>`
+                        : ""
+                    }
+                  </div>`
+                  )
+                  .join("")}
+              </div>
+            `;
+
+            // toggle de cuotas
+            const cuotasDiv = card.querySelector(".cuotas-list");
+            card.addEventListener("click", (e) => {
+              if (!e.target.classList.contains("btnPagar")) {
+                cuotasDiv.style.display =
+                  cuotasDiv.style.display === "block" ? "none" : "block";
+              }
+            });
+
+            prestamosContainer.appendChild(card);
+
+            // alertas por vencimiento cercano
+            p.cuotas.forEach((c) => {
+              const fechaV = new Date(c.fechaVencimiento);
+              const hoy = new Date();
+              const diff =
+                (fechaV - hoy) / (1000 * 60 * 60 * 24); // días restantes
+              if (c.estado === "PENDIENTE" && diff <= 2 && diff >= 0 && !alertaMostrada) {
+                alertas.innerHTML = `<div class="alerta">⚠️ Atención: tienes cuotas que vencen en menos de 2 días.</div>`;
+                alertaMostrada = true;
+              }
+            });
+          });
+
+          // listeners de pagar
+          document.querySelectorAll(".btnPagar").forEach((btn) => {
+            btn.addEventListener("click", async (e) => {
+              e.stopPropagation();
+              const cuotaId = btn.getAttribute("data-id");
+              await fetch(`${API_URL}/cuotas/${cuotaId}/pagar`, { method: "PUT" });
+              alert("✅ Cuota marcada como pagada");
+              cargarPrestamos();
+            });
+          });
+        } catch (err) {
+          prestamosContainer.innerHTML =
+            "<p style='color:red;'>Error al cargar préstamos.</p>";
+          console.error(err);
+        }
+      }
+
+      cargarPrestamos();
+
+      // 🔹 Registrar nuevo préstamo
+      document
+        .getElementById("formNuevoPrestamo")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const monto = document.getElementById("monto").value;
+          const interes = document.getElementById("interes").value;
+          const numeroCuotas = document.getElementById("cuotas").value;
+
+          await fetch(`${API_URL}/prestamos/crear?usuarioId=${userData.id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ monto, interes, numeroCuotas }),
+          });
+
+          alert("✅ Préstamo registrado con éxito");
+          e.target.reset();
+          cargarPrestamos();
+        });
+
+      // 🔹 Enviar correo
+      document.getElementById("btnEnviarCorreo").addEventListener("click", async () => {
+        await fetch(`${API_URL}/email/test/usuario/${userData.id}`, { method: "POST" });
+        alert("✅ Correo de prueba enviado.");
       });
 
-    } catch (error) {
-      prestamosContainer.innerHTML = `<p style="color:red;">Error al cargar préstamos.</p>`;
-      console.error(error);
-    }
-  }
-
-  cargarPrestamos();
-
-  btnEnviarCorreo.addEventListener("click", async () => {
-    try {
-      const res = await fetch(`${API_URL}/email/test/usuario/${userData.id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      // 🔹 Logout
+      document.getElementById("btnLogout").addEventListener("click", () => {
+        localStorage.removeItem("usuario");
+        window.location.href = "index.html";
       });
-      const msg = await res.text();
-      alert("✅ " + msg);
-    } catch (error) {
-      alert("❌ Error al enviar correo");
-    }
-  });
-
-  btnLogout.addEventListener("click", () => {
-    localStorage.removeItem("usuario");
-    window.location.href = "index.html";
-  });
-});
-</script>
-
+    });
+  </script>
 </body>
 </html>
