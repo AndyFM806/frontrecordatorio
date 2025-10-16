@@ -202,6 +202,7 @@
       <input type="number" id="cuotas" placeholder="Número de cuotas" required />
       <label for="fechaEmision"><strong>Fecha de emisión:</strong></label>
       <input type="date" id="fechaEmision" required />
+      <label id="resultadoCuota" style="margin-top: 10px; color: green;"></label>
       <button type="submit">Registrar préstamo</button>
     </form>
 
@@ -409,6 +410,29 @@ document.getElementById("btnEnviarCorreo").addEventListener("click", async () =>
     window.location.href = "index.html";
   });
 });
+    const monto = document.getElementById("monto");
+    const interes = document.getElementById("interes");
+    const cuotas = document.getElementById("cuotas");
+    const resultadoCuota = document.getElementById("resultadoCuota");
+
+    function calcularCuota() {
+      const m = parseFloat(monto.value);
+      const i = parseFloat(interes.value) / 100 / 12; // interés mensual
+      const n = parseInt(cuotas.value);
+
+      if (m > 0 && i >= 0 && n > 0) {
+        // Fórmula de cuota fija (Sistema Francés)
+        const cuota = i === 0 ? m / n : (m * i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
+        resultadoCuota.textContent = `💰 Valor de cada cuota: S/. ${cuota.toFixed(2)}`;
+      } else {
+        resultadoCuota.textContent = "";
+      }
+    }
+
+    // Actualiza el valor automáticamente cuando cambian los datos
+    [monto, interes, cuotas].forEach(campo => {
+      campo.addEventListener("input", calcularCuota);
+    });
 </script>
 
 </body>
